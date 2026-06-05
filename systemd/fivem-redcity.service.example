@@ -2,18 +2,18 @@
 Description=FiveM RedCity ESX Legacy Server (txAdmin + game server)
 After=network-online.target
 Wants=network-online.target
-# Guard against restart storms (also protects keymaster license rate-limit)
 StartLimitIntervalSec=300
 StartLimitBurst=5
 
 [Service]
 Type=simple
 User=root
-# WorkingDirectory controls where txData/ is created -> /opt/fivem-redcity/txData
 WorkingDirectory=/opt/fivem-redcity
+# TXHOST_* config (txData path, port, admin account, deployer defaults)
+EnvironmentFile=/opt/fivem-redcity/txAdmin.env
 # 'tail -f /dev/null |' keeps stdin open so the console does not receive EOF
 # and self-quit with "Ctrl-C pressed in server console".
-ExecStart=/bin/bash -c 'tail -f /dev/null | exec /opt/fivem-redcity/server/run.sh +set serverProfile default +set txAdminPort 40120'
+ExecStart=/bin/bash -c 'tail -f /dev/null | exec /opt/fivem-redcity/server/run.sh'
 Restart=always
 RestartSec=10
 LimitNOFILE=65536

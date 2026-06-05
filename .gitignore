@@ -36,3 +36,6 @@ server-data/.replxx_history
 
 # txAdmin data (credentials/secrets)
 txData/
+
+# txAdmin env (admin hash, DB pass, cfx key)
+txAdmin.env
