@@ -1,0 +1,35 @@
+# ===== Secrets =====
+server-data/secrets.cfg
+.env
+*.key
+*.pem
+
+# ===== Real config (may contain admin identifiers) =====
+server-data/server.cfg
+
+# ===== FiveM artifact (downloaded, not source) =====
+server/
+
+# ===== Third-party resources (cloned from upstream, not our source) =====
+server-data/resources/
+
+# ===== Runtime / cache / logs =====
+server-data/cache/
+server-data/db/
+logs/
+*.log
+
+# ===== Backups & DB dumps (may contain real player data) =====
+backups/
+*.sql
+*.sql.gz
+*.dump
+
+# ===== OS / editor junk =====
+.DS_Store
+Thumbs.db
+*.swp
+
+# FXServer console history
+server-data/.replxx_history
+*.replxx_history

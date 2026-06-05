@@ -1,0 +1,19 @@
+[Unit]
+Description=FiveM RedCity - txAdmin web panel (port 40120)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/fivem-redcity/server-data
+ExecStart=/opt/fivem-redcity/server/run.sh +set serverProfile fivem-redcity +set txAdminPort 40120
+Restart=on-failure
+RestartSec=10
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=fivem-txadmin
+
+[Install]
+WantedBy=multi-user.target
