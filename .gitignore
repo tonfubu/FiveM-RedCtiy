@@ -33,3 +33,6 @@ Thumbs.db
 # FXServer console history
 server-data/.replxx_history
 *.replxx_history
+
+# txAdmin data (credentials/secrets)
+txData/

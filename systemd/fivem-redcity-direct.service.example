@@ -1,0 +1,24 @@
+[Unit]
+Description=FiveM RedCity ESX Legacy Server (direct +exec server.cfg)
+After=network-online.target
+Wants=network-online.target
+# Avoid hammering the license server / restart storms
+StartLimitIntervalSec=300
+StartLimitBurst=4
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/fivem-redcity/server-data
+# 'tail -f /dev/null |' keeps stdin open so FXServer's console does not
+# receive EOF and self-quit with "Ctrl-C pressed in server console".
+ExecStart=/bin/bash -c 'tail -f /dev/null | exec /opt/fivem-redcity/server/run.sh +exec server.cfg'
+Restart=on-failure
+RestartSec=20
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=fivem-redcity
+
+[Install]
+WantedBy=multi-user.target
