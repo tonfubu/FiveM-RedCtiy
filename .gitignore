@@ -10,8 +10,9 @@ server-data/server.cfg
 # ===== FiveM artifact (downloaded, not source) =====
 server/
 
-# ===== Third-party resources (cloned from upstream, not our source) =====
-server-data/resources/
+# ===== Resources: ignore third-party/binary, but KEEP our own source resources =====
+server-data/resources/*
+!server-data/resources/\[redcity\]/
 
 # ===== Runtime / cache / logs =====
 server-data/cache/

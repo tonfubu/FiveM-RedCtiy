@@ -1,0 +1,129 @@
+:root {
+    --hud-bg: rgba(15, 15, 18, 0.86);
+    --hud-border: rgba(255, 255, 255, 0.08);
+    --accent: #FFD21F;
+    --accent-soft: rgba(255, 210, 31, 0.18);
+    --text: #FFFFFF;
+    --muted: #8E8E98;
+    --danger: #FF4D4D;
+    --success: #46e6a0;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: 'Rajdhani', 'Segoe UI', system-ui, sans-serif;
+    user-select: none;
+}
+
+/* ===== capsule container ===== */
+#hud {
+    position: fixed;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-14px);
+    width: 600px;
+    height: 88px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 22px;
+    background: var(--hud-bg);
+    border: 1px solid var(--hud-border);
+    border-radius: 999px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    color: var(--text);
+    opacity: 0;
+    transition: opacity .35s ease, transform .35s ease;
+    pointer-events: none;
+}
+#hud.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+#hud.hidden  { opacity: 0; transform: translateX(-50%) translateY(-14px); }
+
+.section { display: flex; align-items: center; }
+
+/* ===== LEFT : direction + street ===== */
+.left { flex: 1 1 0; min-width: 0; gap: 10px; }
+.compass {
+    position: relative;
+    width: 38px; height: 38px;
+    flex: 0 0 38px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent-soft);
+    border-radius: 50%;
+}
+.dir-letter {
+    position: absolute; bottom: -3px; right: -2px;
+    font-size: 9px; font-weight: 700; color: var(--accent);
+    background: var(--hud-bg); border-radius: 6px; padding: 0 3px;
+}
+.street-box { min-width: 0; overflow: hidden; }
+.dir-line {
+    font-size: 12px; font-weight: 600; letter-spacing: .4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.road-line {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 190px;
+}
+
+/* ===== CENTER : speedometer ===== */
+.center { flex: 0 0 auto; flex-direction: column; gap: 2px; position: relative; }
+.speedo { position: relative; width: 78px; height: 78px; }
+.ring { transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: rgba(255,255,255,0.10); stroke-width: 6; }
+.ring-prog {
+    fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round;
+    stroke-dasharray: 213.6; stroke-dashoffset: 213.6;
+    transition: stroke-dashoffset .18s linear, stroke .25s ease;
+}
+.spd-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.spd-num { font-size: 26px; font-weight: 700; line-height: 1; color: var(--text); }
+.spd-unit { font-size: 9px; color: var(--muted); letter-spacing: 1px; margin-top: 1px; }
+.gear {
+    position: absolute; bottom: -2px; left: 50%; transform: translateX(-50%);
+    font-size: 12px; font-weight: 700; color: var(--accent);
+    background: var(--hud-bg); border: 1px solid var(--hud-border);
+    border-radius: 8px; padding: 1px 8px; min-width: 22px; text-align: center;
+}
+
+/* ===== RIGHT : status icons ===== */
+.right { flex: 1 1 0; justify-content: flex-end; gap: 12px; min-width: 0; }
+.stat {
+    display: flex; align-items: center; gap: 5px;
+    color: var(--muted);
+    transition: color .2s ease, transform .2s ease;
+}
+.stat svg { fill: currentColor; display: block; }
+.stat.active  { color: var(--text); }
+.stat.accent  { color: var(--accent); }
+.stat.warn    { color: var(--danger); animation: pulse 1.1s infinite ease-in-out; }
+.fuel-val { font-size: 13px; font-weight: 600; color: currentColor; min-width: 30px; }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: .55; transform: scale(1.08); }
+}
+
+/* ===== responsive ===== */
+@media (max-width: 1440px) {
+    #hud { width: 560px; height: 82px; top: 14px; }
+    .spd-num { font-size: 24px; }
+    .speedo, .ring { width: 72px; height: 72px; }
+}
+@media (min-width: 2160px) {
+    #hud { width: 660px; height: 96px; gap: 18px; }
+    .spd-num { font-size: 30px; }
+}
