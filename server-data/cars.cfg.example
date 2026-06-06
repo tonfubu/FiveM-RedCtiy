@@ -1,0 +1,99 @@
+# ============================================================
+#   cars.cfg  --  RAPTUMGAMER car pack (audited, 90 resources)
+#   Deployed to resources/[cars]/  |  converted to fxmanifest
+#   Conflicts (same spawn name) -> only ONE per group enabled:
+#     huntley/massacro/thrust : avenadmin (avenhitman/avendora disabled)
+#     doc/jsred/tm            : js        (xmas disabled)
+#     drchiron/mcdr/rmoddr    : helicoptermc (helicopterair disabled)
+# ============================================================
+
+ensure 1000rr
+ensure 1500
+ensure 370z
+ensure 3tz
+ensure 650slw
+ensure 911turbos
+ensure accord17
+ensure acmugen10
+ensure ageraone
+ensure ap32
+ensure avenadmin
+#ensure avendora   # disabled: spawn-name conflict (enable instead of its group peer)
+ensure avenguy
+#ensure avenhitman   # disabled: spawn-name conflict (enable instead of its group peer)
+ensure bemos
+ensure bm2
+ensure bmwi8
+ensure bmws
+ensure bmws2
+ensure brickade
+ensure bs17
+ensure carmc
+ensure carpol
+ensure cartaxi
+ensure cartaxi1
+ensure cayenne
+ensure cbr2014
+ensure cbr2017
+ensure chargerf8
+ensure chironun
+ensure civictr
+ensure denalihd
+ensure develSix
+ensure dragbike
+ensure du1199
+ensure ebus8
+ensure esx_pcx
+ensure evoque
+ensure f15078
+ensure fastNfurious
+ensure fastun
+ensure fenyr
+ensure fenyrpolice
+ensure fgt2017
+ensure filthynsx
+ensure g65amg
+ensure gsxr1000
+#ensure helicopterair   # disabled: spawn-name conflict (enable instead of its group peer)
+ensure helicoptermc
+ensure hmcar1
+ensure HuracanGT3
+ensure japaribus
+ensure js
+ensure kr150
+ensure ksr
+ensure ktmx
+ensure lwlp670
+ensure M1116Humvee
+ensure m2
+ensure mclaren570gt
+ensure minib
+ensure MSX
+ensure msx99
+ensure msxgrom
+ensure mustanggt15
+ensure nh2r
+ensure p1
+ensure policebu
+ensure PoliceGT350R
+ensure premierun
+ensure r1v2018
+ensure r8m
+ensure recon
+ensure redf1
+ensure regera
+ensure rs777
+ensure s1000thai
+ensure satoca
+ensure senna
+ensure tankmt
+ensure timemachine
+ensure tricolore
+ensure tupremier
+ensure twz
+ensure wave125
+ensure wave125s
+ensure x6m
+#ensure xmas   # disabled: spawn-name conflict (enable instead of its group peer)
+ensure zx10r
+ensure zzxc
