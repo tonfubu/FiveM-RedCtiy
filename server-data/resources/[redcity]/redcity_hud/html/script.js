@@ -1,106 +1,175 @@
-(function () {
-    const RING_CIRC = 213.6; // 2*pi*34
-    let maxSpeed = 220;
+const $ = (id) => document.getElementById(id);
+const rootStyle = document.documentElement.style;
+const circumference = 194.78;
+let alertTimer = null;
+let audioCtx = null;
 
-    let targetSpeed = 0;
-    let shownSpeed = 0;
-    let rafActive = false;
+function toggle(el, visible) {
+    el.classList.toggle('hidden', !visible);
+}
 
-    const $ = (id) => document.getElementById(id);
-    const hud = $('hud');
+function setClass(el, classes) {
+    el.className = classes;
+}
 
-    function show() {
-        hud.classList.remove('hidden');
-        hud.classList.add('visible');
+function setWidth(id, value) {
+    $(id).style.width = `${Math.max(0, Math.min(100, Number(value) || 0))}%`;
+}
+
+function healthColor(value, inverse) {
+    value = Number(value) || 0;
+    if (inverse) {
+        if (value >= 75) return '#FF4D4D';
+        if (value >= 45) return '#C084FC';
+        return '#22C55E';
     }
-    function hide() {
-        hud.classList.remove('visible');
-        hud.classList.add('hidden');
+    if (value <= 12) return '#FF4D4D';
+    if (value <= 30) return '#FB923C';
+    if (value <= 60) return '#FFD21F';
+    return '#22C55E';
+}
+
+function updateVoice(voice) {
+    if (!voice) return;
+    const label = voice.label || voice.name || 'Normal';
+    const color = voice.color || '#FFD21F';
+    $('voiceChip').textContent = label;
+    $('voiceChip').style.color = color;
+    $('voiceChip').classList.toggle('talking', !!voice.talking);
+    $('playerVoice').textContent = `[P] ${label}`;
+    $('playerVoice').style.color = color;
+    $('micStat').style.color = color;
+    $('micStat').classList.toggle('talking', !!voice.talking);
+}
+
+function updateVehicle(data) {
+    $('direction').textContent = data.directionText || data.direction || 'NORTH';
+    $('street').textContent = data.street || 'Unknown Road';
+    $('speed').textContent = Number(data.speed || 0);
+    $('gear').textContent = data.gear || 'N';
+    $('fuel').textContent = `${Number(data.fuel || 0)}%`;
+
+    const speedRatio = Math.min(Number(data.speed || 0) / Number(data.maxSpeed || 240), 1);
+    $('speedRing').style.strokeDashoffset = circumference - (circumference * speedRatio);
+    $('speedRing').style.stroke = speedRatio > .82 ? '#FF4D4D' : '#FFD21F';
+
+    const durability = Number(data.durability || 0);
+    $('durability').textContent = `${durability}%`;
+    setWidth('durabilityBar', durability);
+    $('durabilityBar').style.background = healthColor(durability);
+
+    setClass($('fuelStat'), `stat ${data.fuelWarn ? 'warn pulse' : 'accent'}`);
+    setClass($('durabilityStat'), `stat durability ${data.engineWarn ? 'warn' : 'ok'}`);
+    setClass($('engineStat'), `stat icon-only ${data.engineFailed ? 'warn pulse' : (data.engine ? 'ok' : 'warn')}`);
+    $('engineStat').textContent = data.engineFailed ? 'FAIL' : (data.engine ? 'ENG' : 'OFF');
+    setClass($('lockStat'), `stat icon-only ${data.locked ? 'accent' : ''}`);
+    $('lockStat').textContent = data.locked ? 'LOCK' : 'OPEN';
+    setClass($('beltStat'), `stat icon-only belt ${data.seatbelt ? 'ok' : (data.seatbeltWarn ? 'warn pulse' : '')}`);
+    $('beltStat').textContent = data.seatbelt ? 'BELT' : 'NO BELT';
+    updateVoice(data.voice);
+}
+
+function updateStatus(data) {
+    const hp = Number(data.hp || 0);
+    const armor = Number(data.armor || 0);
+    const hunger = Number(data.hunger == null ? 100 : data.hunger);
+    const stress = Number(data.stress || 0);
+    $('hpText').textContent = Math.round(hp);
+    $('armorText').textContent = Math.round(armor);
+    $('hungerText').textContent = Math.round(hunger);
+    $('stressText').textContent = Math.round(stress);
+    setWidth('hpBar', hp);
+    setWidth('armorBar', armor);
+    setWidth('hungerBar', hunger);
+    setWidth('stressBar', stress);
+    $('hpBar').style.background = healthColor(hp);
+    $('hungerBar').style.background = healthColor(hunger);
+    $('stressBar').style.background = healthColor(stress, true);
+    $('hpRow').classList.toggle('danger', hp <= 25);
+    $('hungerRow').classList.toggle('danger', hunger <= 20);
+    $('stressRow').classList.toggle('danger', stress >= 80);
+}
+
+function showAlert(text) {
+    $('alertBox').textContent = text || 'WARNING';
+    toggle($('alertBox'), true);
+    clearTimeout(alertTimer);
+    alertTimer = setTimeout(() => toggle($('alertBox'), false), 3000);
+}
+
+function playSound(name) {
+    const audio = $(name);
+    if (!audio) return fallbackTone(name);
+    audio.volume = name === 'seatbelt_warning' ? 0.18 : 0.22;
+    audio.currentTime = 0;
+    audio.play().catch(() => fallbackTone(name));
+}
+
+function fallbackTone(name) {
+    try {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const freq = name === 'seatbelt_on' ? 880 : (name === 'seatbelt_off' ? 420 : 660);
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(name === 'seatbelt_warning' ? 0.045 : 0.035, audioCtx.currentTime + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.16);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.18);
+    } catch (_) {}
+}
+
+window.addEventListener('message', (event) => {
+    const msg = event.data || {};
+    if (msg.action === 'config') {
+        if (msg.hud && msg.hud.Scale) rootStyle.setProperty('--scale', msg.hud.Scale);
+        return;
     }
-
-    function setStat(el, state) {
-        el.classList.remove('active', 'accent', 'warn');
-        if (state) el.classList.add(state);
+    if (msg.action === 'vehicleVisible') {
+        toggle($('vehicleHud'), !!msg.visible);
+        return;
     }
-
-    // smooth speed animation
-    function animate() {
-        const diff = targetSpeed - shownSpeed;
-        if (Math.abs(diff) < 0.5) {
-            shownSpeed = targetSpeed;
-        } else {
-            shownSpeed += diff * 0.25;
-        }
-        const s = Math.round(shownSpeed);
-        $('speed').textContent = s;
-
-        const frac = Math.max(0, Math.min(1, shownSpeed / maxSpeed));
-        $('ringProg').style.strokeDashoffset = (RING_CIRC * (1 - frac)).toFixed(1);
-        // ring turns danger-red near top speed
-        $('ringProg').style.stroke = frac > 0.92 ? 'var(--danger)' : 'var(--accent)';
-
-        if (shownSpeed !== targetSpeed) {
-            requestAnimationFrame(animate);
-        } else {
-            rafActive = false;
-        }
+    if (msg.action === 'playerVisible') {
+        toggle($('playerInfo'), !!msg.visible);
+        return;
     }
-    function kick() {
-        if (!rafActive) { rafActive = true; requestAnimationFrame(animate); }
+    if (msg.action === 'vehicle') {
+        updateVehicle(msg);
+        return;
     }
-
-    function update(d) {
-        // speed + gear
-        targetSpeed = d.speed || 0;
-        kick();
-        $('gear').textContent = d.gear != null ? d.gear : 'N';
-        if (d.maxSpeed) maxSpeed = d.maxSpeed;
-
-        // street / direction
-        $('direction').textContent = d.directionText || d.direction || '';
-        $('dirLetter').textContent = d.direction || '';
-        $('street').textContent = (d.street && d.street.length) ? d.street : 'Unknown Street';
-
-        // voice
-        let vEl = $('st-voice');
-        if (d.talking) {
-            setStat(vEl, d.voiceMode === 'shout' ? 'warn' : 'accent');
-        } else {
-            setStat(vEl, null);
-        }
-
-        // seatbelt: on=accent, off+fast=warn, off=muted
-        let bEl = $('st-belt');
-        if (d.seatbelt) setStat(bEl, 'accent');
-        else if ((d.speed || 0) > 60) setStat(bEl, 'warn');
-        else setStat(bEl, null);
-
-        // lock
-        setStat($('st-lock'), d.locked ? 'accent' : null);
-
-        // engine
-        let eEl = $('st-engine');
-        if (d.engineWarn) setStat(eEl, 'warn');
-        else if (d.engine) setStat(eEl, 'active');
-        else setStat(eEl, null);
-
-        // fuel
-        let fEl = $('st-fuel');
-        $('fuelVal').textContent = (d.fuel != null ? d.fuel : '--') + '%';
-        if (d.fuelWarn) setStat(fEl, 'warn');
-        else setStat(fEl, 'active');
+    if (msg.action === 'playerInfo') {
+        $('playerId').textContent = msg.id || 0;
+        $('dateText').textContent = msg.date || '--/--/--';
+        $('timeText').textContent = msg.time || '--:--';
+        updateVoice(msg.voice);
+        return;
     }
-
-    window.addEventListener('message', function (e) {
-        const msg = e.data || {};
-        switch (msg.action) {
-            case 'show':   show(); break;
-            case 'hide':   hide(); break;
-            case 'update': update(msg.data || {}); break;
-            case 'config':
-                if (msg.data && msg.data.maxSpeed) maxSpeed = msg.data.maxSpeed;
-                if (msg.data && msg.data.units) $('unit').textContent = msg.data.units;
-                break;
-        }
-    });
-})();
+    if (msg.action === 'status') {
+        updateStatus(msg);
+        return;
+    }
+    if (msg.action === 'sound') {
+        playSound(msg.name);
+        return;
+    }
+    if (msg.action === 'seatbelt') {
+        $('beltStat').classList.toggle('ok', !!msg.enabled);
+        return;
+    }
+    if (msg.action === 'voiceFlash') {
+        updateVoice(msg.voice);
+        return;
+    }
+    if (msg.action === 'alert') {
+        showAlert(msg.text);
+        return;
+    }
+    if (msg.action === 'refuel') {
+        toggle($('refuelBox'), !!msg.active);
+        if (msg.progress != null) setWidth('refuelBar', msg.progress);
+    }
+});

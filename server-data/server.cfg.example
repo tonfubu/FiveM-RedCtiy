@@ -80,6 +80,7 @@ ensure esx_datastore
 ensure esx_society
 ensure esx_status
 ensure esx_basicneeds
+ensure redcity_hud
 ensure esx_optionalneeds
 ensure esx_billing
 ensure esx_license

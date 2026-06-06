@@ -1,64 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+    <title>RedCity HUD</title>
 </head>
 <body>
-    <div id="hud" class="hidden">
-
-        <!-- LEFT : direction + street -->
-        <div class="section left">
-            <div class="compass">
-                <svg viewBox="0 0 24 24" width="20" height="20">
-                    <path d="M12 2 L15 12 L12 22 L9 12 Z" fill="var(--accent)"/>
-                    <circle cx="12" cy="12" r="10" fill="none" stroke="var(--muted)" stroke-width="1.2" opacity="0.5"/>
-                </svg>
-                <span id="dirLetter" class="dir-letter">N</span>
-            </div>
-            <div class="street-box">
-                <div id="direction" class="dir-line">North Bound</div>
-                <div id="street" class="road-line">Unknown Street</div>
-            </div>
-        </div>
-
-        <!-- CENTER : speedometer -->
-        <div class="section center">
-            <div class="speedo">
-                <svg class="ring" viewBox="0 0 80 80" width="78" height="78">
-                    <circle class="ring-track" cx="40" cy="40" r="34" />
-                    <circle id="ringProg" class="ring-prog" cx="40" cy="40" r="34" />
-                </svg>
-                <div class="spd-center">
-                    <div id="speed" class="spd-num">0</div>
-                    <div id="unit" class="spd-unit">km/h</div>
+    <main id="root">
+        <section id="vehicleHud" class="vehicle-hud hidden" aria-hidden="true">
+            <div class="road">
+                <div class="direction">
+                    <span id="direction">NORTH</span>
+                    <span id="voiceChip" class="voice-chip">Normal</span>
                 </div>
+                <div id="street" class="street">RedCity</div>
             </div>
-            <div id="gear" class="gear">N</div>
-        </div>
 
-        <!-- RIGHT : status icons -->
-        <div class="section right">
-            <div id="st-voice" class="stat" title="Voice">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v5a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg>
+            <div class="speed-block">
+                <svg class="speed-ring" viewBox="0 0 74 74">
+                    <circle class="ring-bg" cx="37" cy="37" r="31"></circle>
+                    <circle id="speedRing" class="ring-value" cx="37" cy="37" r="31"></circle>
+                </svg>
+                <div class="speed-readout">
+                    <strong id="speed">0</strong>
+                    <span>km/h</span>
+                </div>
+                <div id="gear" class="gear">N</div>
             </div>
-            <div id="st-belt" class="stat" title="Seatbelt">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M7 3h2l4 8v10h-2v-4H9v4H7V3zm8 0h2v18h-2l-3-7 3-1-2-4 2-6z"/></svg>
-            </div>
-            <div id="st-lock" class="stat" title="Lock">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5zm-3 8V6a3 3 0 0 1 6 0v3H9z"/></svg>
-            </div>
-            <div id="st-engine" class="stat" title="Engine">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M7 6h6l1 2h3V6h2v4h-2l-1 2v3h2v4h-4v-3H9l-2 2H4v-4h2l1-2V6z"/></svg>
-            </div>
-            <div id="st-fuel" class="stat fuel" title="Fuel">
-                <svg viewBox="0 0 24 24" width="18" height="18"><path d="M5 3h8a2 2 0 0 1 2 2v15H3V5a2 2 0 0 1 2-2zm0 4v4h8V7H5zm12 1 2 2v7a1.5 1.5 0 0 1-3 0v-5h-1V8h2z"/></svg>
-                <span id="fuelVal" class="fuel-val">--%</span>
-            </div>
-        </div>
 
-    </div>
+            <div class="vehicle-stats">
+                <div id="fuelStat" class="stat">
+                    <span class="ico">FUEL</span>
+                    <span id="fuel">100%</span>
+                </div>
+                <div id="durabilityStat" class="stat durability">
+                    <span class="ico">DMG</span>
+                    <span class="bar"><i id="durabilityBar"></i></span>
+                    <span id="durability">100%</span>
+                </div>
+                <div id="engineStat" class="stat icon-only" title="Engine">ENG</div>
+                <div id="lockStat" class="stat icon-only" title="Lock">LOCK</div>
+                <div id="beltStat" class="stat icon-only belt" title="Seatbelt">BELT</div>
+                <div id="micStat" class="stat icon-only mic" title="Voice">MIC</div>
+            </div>
+        </section>
+
+        <section id="playerInfo" class="player-info hidden" aria-hidden="true">
+            <span>ID: <b id="playerId">0</b></span>
+            <span>Date: <b id="dateText">--/--/--</b></span>
+            <span>Time: <b id="timeText">--:--</b></span>
+            <span id="playerVoice" class="player-voice">[P] Normal</span>
+        </section>
+
+        <section id="statusHud" class="status-hud">
+            <div id="hpRow" class="status-row hp">
+                <span>HP</span>
+                <b><i id="hpBar"></i></b>
+                <em id="hpText">100</em>
+            </div>
+            <div class="status-row armor">
+                <span>ARM</span>
+                <b><i id="armorBar"></i></b>
+                <em id="armorText">0</em>
+            </div>
+            <div id="hungerRow" class="status-row hunger">
+                <span>FOOD</span>
+                <b><i id="hungerBar"></i></b>
+                <em id="hungerText">100</em>
+            </div>
+            <div id="stressRow" class="status-row stress">
+                <span>MIND</span>
+                <b><i id="stressBar"></i></b>
+                <em id="stressText">0</em>
+            </div>
+        </section>
+
+        <section id="alertBox" class="alert-box hidden">ENGINE FAILURE</section>
+        <section id="refuelBox" class="refuel-box hidden">
+            <span>REFUELING</span>
+            <b><i id="refuelBar"></i></b>
+        </section>
+    </main>
+
+    <audio id="seatbelt_on" src="sounds/seatbelt_on.ogg" preload="auto"></audio>
+    <audio id="seatbelt_off" src="sounds/seatbelt_off.ogg" preload="auto"></audio>
+    <audio id="seatbelt_warning" src="sounds/seatbelt_warning.ogg" preload="auto"></audio>
     <script src="script.js"></script>
 </body>
 </html>
