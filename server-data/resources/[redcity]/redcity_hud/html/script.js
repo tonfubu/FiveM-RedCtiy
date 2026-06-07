@@ -69,25 +69,24 @@ function updateVehicle(data) {
     updateVoice(data.voice);
 }
 
+function setCirclePercent(el, value) {
+    const deg = Math.max(0, Math.min(100, Number(value) || 0)) * 3.6;
+    el.style.setProperty('--percent', deg + 'deg');
+}
+
 function updateStatus(data) {
-    const hp = Number(data.hp || 0);
-    const armor = Number(data.armor || 0);
+    const hp = Math.max(0, Math.min(100, Number(data.hp || 0)));
+    const armor = Math.max(0, Math.min(100, Number(data.armor || 0)));
     const hunger = Number(data.hunger == null ? 100 : data.hunger);
     const stress = Number(data.stress || 0);
-    $('hpText').textContent = Math.round(hp);
-    $('armorText').textContent = Math.round(armor);
-    $('hungerText').textContent = Math.round(hunger);
-    $('stressText').textContent = Math.round(stress);
     setWidth('hpBar', hp);
     setWidth('armorBar', armor);
-    setWidth('hungerBar', hunger);
-    setWidth('stressBar', stress);
-    $('hpBar').style.background = healthColor(hp);
-    $('hungerBar').style.background = healthColor(hunger);
-    $('stressBar').style.background = healthColor(stress, true);
-    $('hpRow').classList.toggle('danger', hp <= 25);
-    $('hungerRow').classList.toggle('danger', hunger <= 20);
-    $('stressRow').classList.toggle('danger', stress >= 80);
+    $('hpText').textContent = Math.round(hp) + '%';
+    $('hungerText').textContent = Math.round(hunger);
+    $('stressText').textContent = Math.round(stress);
+    setCirclePercent($('hungerCircle'), hunger);
+    setCirclePercent($('stressCircle'), stress);
+    $('statusHud').classList.toggle('dead', !!data.dead || hp <= 0);
 }
 
 function showAlert(text) {

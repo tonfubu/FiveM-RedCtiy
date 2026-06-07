@@ -54,25 +54,21 @@
         </section>
 
         <section id="statusHud" class="status-hud">
-            <div id="hpRow" class="status-row hp">
-                <span>HP</span>
-                <b><i id="hpBar"></i></b>
-                <em id="hpText">100</em>
+            <div class="status-icon"><span>&#127939;</span></div>
+            <div class="status-bars">
+                <div class="armor-row">
+                    <span class="label">ARMOR</span>
+                    <div class="armor-track"><div class="armor-fill" id="armorBar"></div></div>
+                </div>
+                <div class="hp-row">
+                    <span class="label">HP</span>
+                    <div class="hp-track"><div class="hp-fill" id="hpBar"></div></div>
+                    <span class="hp-percent" id="hpText">100%</span>
+                </div>
             </div>
-            <div class="status-row armor">
-                <span>ARM</span>
-                <b><i id="armorBar"></i></b>
-                <em id="armorText">0</em>
-            </div>
-            <div id="hungerRow" class="status-row hunger">
-                <span>FOOD</span>
-                <b><i id="hungerBar"></i></b>
-                <em id="hungerText">100</em>
-            </div>
-            <div id="stressRow" class="status-row stress">
-                <span>MIND</span>
-                <b><i id="stressBar"></i></b>
-                <em id="stressText">0</em>
+            <div class="status-circles">
+                <div class="circle hunger" id="hungerCircle"><span class="value" id="hungerText">100</span></div>
+                <div class="circle stress" id="stressCircle"><span class="value" id="stressText">0</span></div>
             </div>
         </section>
 
